@@ -5,4 +5,4 @@ class Backup:
     disk = Disk()
     cron = None
     delete_old = True
-    enable = True
+    enable = False
