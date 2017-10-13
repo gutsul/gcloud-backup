@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import argparse
-from pprint import pprint
-
 import googleapiclient.discovery
-
-# Global settings
+from pprint import pprint
 from model.disk import Disk
 
+
+# Global settings
 PROJECT_ID = 'adlithium-1289'
 
 
