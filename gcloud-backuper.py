@@ -42,6 +42,7 @@ def create_new_disk(args):
     disk.name = name
     disk.zone = zone
     disk.sizeGb = response.get('sizeGb')
+    disk.save()
 
     print("Added: {}".format(disk.name))
     # pprint(response)
