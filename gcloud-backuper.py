@@ -47,14 +47,21 @@ def create_new_disk(args):
     # pprint(response)
 
 
+def print_list(args):
+    print("List")
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='GCloud backup utility')
     subparsers = parser.add_subparsers()
 
     parser_append = subparsers.add_parser('append', help='Append a persistent disk to backup list')
-    parser_append.add_argument('name', type=str, help='The name of persistent disk')
-    parser_append.add_argument('zone', type=str, help='The name of the zone')
+    parser_append.add_argument('name', help='The name of persistent disk')
+    parser_append.add_argument('zone', help='The name of the zone')
     parser_append.set_defaults(func=create_new_disk)
+
+    parser_list = subparsers.add_parser('list', help='Show backup list')
+    parser_list.set_defaults(func=print_list)
 
     return parser.parse_args()
 
