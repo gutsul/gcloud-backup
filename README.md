@@ -1,3 +1,5 @@
+# GCloudBackup
+
 
 ### Settings to start development
 
@@ -25,4 +27,13 @@ gcloud auth application-default login
 Result:
 ```bash
 Credentials saved to file: [/home/ygrigortsevich/.config/gcloud/application_default_credentials.json]
+```
+
+
+### Requirements
+- Python 3
+- sqlite
+
+```bash
+sudo apt-get install sqlite
 ```
