@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import googleapiclient.discovery
+from prettytable import PrettyTable
 from model.backup import Backup
 
 
@@ -46,7 +47,17 @@ def add_backup(args):
 
 
 def print_list(args):
-    print("List")
+
+    backups = Backup().get_all()
+
+    table = PrettyTable(['ID', 'Name', 'Disk', 'Time (UTC)', 'Zone', 'Environment', 'Count', 'Status'])
+
+
+    for backup in backups:
+        table.add_row([backup.id, backup.name, backup.disk, backup.time,
+                       backup.zone, backup.env, backup.count, backup.status])
+
+    print(table)
 
 
 def parse_args():

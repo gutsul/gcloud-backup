@@ -27,3 +27,31 @@ class Backup:
 
         connection.commit()
         connection.close()
+
+    @staticmethod
+    def get_all():
+        connection = sqlite3.connect('data/backup')
+        cursor = connection.cursor()
+
+        sql = "SELECT id, name, description, count, status, env, disk, zone, time FROM backup"
+        cursor.execute(sql)
+
+        data = cursor.fetchall()
+        connection.close()
+
+        backups = []
+
+        for row in data:
+            backup = Backup()
+            backup.id = row[0]
+            backup.name = row[1]
+            backup.description = row[2]
+            backup.count = row[3]
+            backup.status = row[4]
+            backup.env = row[5]
+            backup.disk = row[6]
+            backup.zone = row[7]
+            backup.time = row[8]
+            backups.append(backup)
+
+        return backups
