@@ -57,11 +57,33 @@ class Backup:
         return backups
 
     @staticmethod
-    def delete(id):
+    def get(id):
         connection = sqlite3.connect('data/backup')
         cursor = connection.cursor()
 
-        sql = "DELETE FROM backup WHERE id = {0}".format(id)
+        sql = "SELECT id, name, description, count, status, env, disk, zone, time FROM backup WHERE id = {0}".format(id)
+        cursor.execute(sql)
+
+        data = cursor.fetchone()
+        connection.close()
+
+        backup = Backup()
+        backup.id = data[0]
+        backup.name = data[1]
+        backup.description = data[2]
+        backup.count = data[3]
+        backup.status = data[4]
+        backup.env = data[5]
+        backup.disk = data[6]
+        backup.zone = data[7]
+        backup.time = data[8]
+        return backup
+
+    def delete(self):
+        connection = sqlite3.connect('data/backup')
+        cursor = connection.cursor()
+
+        sql = "DELETE FROM backup WHERE id = {0}".format(self.id)
         cursor.execute(sql)
 
         connection.commit()
