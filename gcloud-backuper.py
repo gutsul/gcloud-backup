@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import googleapiclient.discovery
-from pprint import pprint
-from model.disk import Disk
+from model.backup import Backup
 
 
 # Global settings
@@ -19,33 +18,31 @@ def create_service():
     return googleapiclient.discovery.build('compute', 'v1')
 
 
-def validate_disk(name, zone):
+def validate_disk(disk, zone):
     try:
-        request = service.disks().get(project=PROJECT_ID, zone=zone, disk=name)
+        request = service.disks().get(project=PROJECT_ID, zone=zone, disk=disk)
         response = request.execute()
         return response
     except:
         return None
 
 
-def create_new_disk(args):
+def add_backup(args):
     # TODO: Maybe_delete
-    name = str(args.name)
+    disk = str(args.disk)
     zone = str(args.zone)
 
-    response = validate_disk(name, zone)
+    response = validate_disk(disk, zone)
     if response is None:
         print("ERROR: Name or zone is not valid.")
         exit(0)
 
-    disk = Disk()
-    disk.name = name
-    disk.zone = zone
-    disk.sizeGb = response.get('sizeGb')
-    disk.save()
+    backup = Backup()
+    backup.disk = disk
+    backup.zone = zone
+    backup.save()
 
-    print("Added: {}".format(disk.name))
-    # pprint(response)
+    print("Saved: {}".format(backup.disk))
 
 
 def print_list(args):
@@ -57,9 +54,9 @@ def parse_args():
     subparsers = parser.add_subparsers()
 
     parser_append = subparsers.add_parser('append', help='Append a persistent disk to backup list')
-    parser_append.add_argument('name', help='The name of persistent disk')
+    parser_append.add_argument('disk', help='The name of persistent disk')
     parser_append.add_argument('zone', help='The name of the zone')
-    parser_append.set_defaults(func=create_new_disk)
+    parser_append.set_defaults(func=add_backup)
 
     parser_list = subparsers.add_parser('list', help='Show backup list')
     parser_list.set_defaults(func=print_list)
