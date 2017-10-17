@@ -10,6 +10,7 @@ class Backup:
     env = 'None'
     disk = None
     zone = None
+    time = None
 
     def save(self):
         connection = sqlite3.connect('data/backup')
@@ -20,8 +21,8 @@ class Backup:
         status = cursor.fetchone()[0]
 
         if status == 0:
-            sql = "INSERT INTO backup (name, description, count, status, env, disk, zone) VALUES('{0}','{1}', {2}, '{3}', '{4}', '{5}', '{6}')"\
-                .format(self.name, self.description, self.count, self.status, self.env, self.disk, self.zone)
+            sql = "INSERT INTO backup (name, description, count, status, env, disk, zone, time) VALUES('{0}','{1}', {2}, '{3}', '{4}', '{5}', '{6}', '{7}')"\
+                .format(self.name, self.description, self.count, self.status, self.env, self.disk, self.zone, self.time)
             cursor.execute(sql)
 
         connection.commit()
