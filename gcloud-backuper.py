@@ -46,6 +46,12 @@ def add_backup(args):
     print("Saved: {}".format(backup.disk))
 
 
+def remove_backup(args):
+    id = int(args.id)
+    Backup.delete(id)
+    print("Removed backup: {0}".format(id))
+
+
 def print_list(args):
 
     backups = Backup().get_all()
@@ -64,13 +70,20 @@ def parse_args():
     parser = argparse.ArgumentParser(description='GCloud backup utility')
     subparsers = parser.add_subparsers()
 
-    parser_append = subparsers.add_parser('append', help='Append a persistent disk to backup list')
-    parser_append.add_argument('disk', help='The name of persistent disk')
-    parser_append.add_argument('zone', help='The name of the zone')
+    parser_append = subparsers.add_parser('append', help='Append a persistent disk to backup list.')
+    parser_append.add_argument('disk', help='The name of persistent disk.')
+    parser_append.add_argument('zone', help='The name of the zone.')
     parser_append.set_defaults(func=add_backup)
+
+    parser_remove = subparsers.add_parser('remove', help='Remove a persistent disk from backup list.')
+    parser_remove.add_argument('id', help='Id of persistent disk.')
+    parser_remove.set_defaults(func=remove_backup)
+
 
     parser_list = subparsers.add_parser('list', help='Show backup list')
     parser_list.set_defaults(func=print_list)
+
+
 
     return parser.parse_args()
 

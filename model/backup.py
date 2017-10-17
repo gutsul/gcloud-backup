@@ -55,3 +55,14 @@ class Backup:
             backups.append(backup)
 
         return backups
+
+    @staticmethod
+    def delete(id):
+        connection = sqlite3.connect('data/backup')
+        cursor = connection.cursor()
+
+        sql = "DELETE FROM backup WHERE id = {0}".format(id)
+        cursor.execute(sql)
+
+        connection.commit()
+        connection.close()
