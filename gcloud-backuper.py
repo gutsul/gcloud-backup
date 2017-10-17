@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import argparse
+from time import sleep
+
 import googleapiclient.discovery
 from prettytable import PrettyTable
 from model.backup import Backup
@@ -7,6 +9,8 @@ from model.backup import Backup
 
 # Global settings
 PROJECT_ID = 'adlithium-1289'
+
+SNAPSHOT_READY = 'READY'
 
 
 def create_service():
@@ -19,6 +23,7 @@ def create_service():
     return googleapiclient.discovery.build('compute', 'v1')
 
 
+# Gcloud
 def validate_disk(disk, zone):
     try:
         request = service.disks().get(project=PROJECT_ID, zone=zone, disk=disk)
@@ -52,16 +57,48 @@ def remove_backup(args):
     print("Removed backup: {0}".format(id))
 
 
-def print_list(args):
+# Gcloud
+def create_snapshot(name, description, disk, zone):
+    snapshot_body = {
+        "name": name,
+        "description": description,
+    }
 
+    request = service.disks().createSnapshot(project=PROJECT_ID, zone=zone, disk=disk, body=snapshot_body)
+    request.execute()
+
+    check_snapshot_status(name)
+
+
+# Gcloud
+def check_snapshot_status(name):
+    while True:
+        sleep(20)
+
+        request = service.snapshots().get(project=PROJECT_ID, snapshot=name)
+        response = request.execute()
+
+        status = response.get('status')
+
+        if status == SNAPSHOT_READY:
+            print("Snapshot {0} created".format(name))
+            break
+
+
+# Gcloud
+def delete_snapshot(name):
+    request = service.snapshots().delete(project=PROJECT_ID, snapshot=name)
+    request.execute()
+
+
+def print_list(args):
     backups = Backup().get_all()
 
-    table = PrettyTable(['ID', 'Name', 'Disk', 'Time (UTC)', 'Zone', 'Environment', 'Count', 'Status'])
-
+    table = PrettyTable(['ID', 'Name', 'Disk', 'Time (UTC)', 'Zone', 'Environment', 'Status'])
 
     for backup in backups:
         table.add_row([backup.id, backup.name, backup.disk, backup.time,
-                       backup.zone, backup.env, backup.count, backup.status])
+                       backup.zone, backup.env, backup.status])
 
     print(table)
 
