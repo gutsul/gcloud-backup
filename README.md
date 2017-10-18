@@ -37,3 +37,11 @@ Credentials saved to file: [/home/ygrigortsevich/.config/gcloud/application_defa
 ```bash
 sudo apt-get install sqlite
 ```
+
+
+### Usage
+1. Add disk to backup list
+
+2. Configure backup
+
+3. Add job to crontab

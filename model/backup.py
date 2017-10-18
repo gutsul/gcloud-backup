@@ -1,5 +1,7 @@
 import sqlite3
 
+NOT_EXIST = 0
+
 
 class Backup:
     id = 0
@@ -20,10 +22,14 @@ class Backup:
         cursor.execute(check_sql)
         status = cursor.fetchone()[0]
 
-        if status == 0:
+        if status == NOT_EXIST:
             sql = "INSERT INTO backup (name, description, count, status, env, disk, zone, time) VALUES('{0}','{1}', {2}, '{3}', '{4}', '{5}', '{6}', '{7}')"\
                 .format(self.name, self.description, self.count, self.status, self.env, self.disk, self.zone, self.time)
-            cursor.execute(sql)
+        else:
+            sql = "UPDATE backup SET name='{0}', description='{1}', count={2}, status='{3}', env='{4}', time='{5}' WHERE id = {6}" \
+                .format(self.name, self.description, self.count, self.status, self.env, self.time, self.id)
+
+        cursor.execute(sql)
 
         connection.commit()
         connection.close()
@@ -67,17 +73,20 @@ class Backup:
         data = cursor.fetchone()
         connection.close()
 
-        backup = Backup()
-        backup.id = data[0]
-        backup.name = data[1]
-        backup.description = data[2]
-        backup.count = data[3]
-        backup.status = data[4]
-        backup.env = data[5]
-        backup.disk = data[6]
-        backup.zone = data[7]
-        backup.time = data[8]
-        return backup
+        if data is not None:
+            backup = Backup()
+            backup.id = data[0]
+            backup.name = data[1]
+            backup.description = data[2]
+            backup.count = data[3]
+            backup.status = data[4]
+            backup.env = data[5]
+            backup.disk = data[6]
+            backup.zone = data[7]
+            backup.time = data[8]
+            return backup
+        else:
+            return None
 
     def delete(self):
         connection = sqlite3.connect('data/backup')
