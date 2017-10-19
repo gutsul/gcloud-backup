@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
+import json
 
+import requests
 from prettytable import PrettyTable
 from model.backup import Backup
 import api
@@ -84,6 +86,20 @@ def configure(default, title):
     return setting
 
 
+def jarvis_say(name, disk, env):
+    message = "Created snapshot {0}".format(name)
+
+    payload = {"attachments": [
+        {"color": "good", "title": "Backup disk", "pretext": "<@ygrigortsevich> <@victordementiev> <@alexander>",
+         "text": message, "mrkdwn_in": ["text"], "fields": [{"title": "Disk", "value": disk, "short": True},
+                                                            {"title": "Environment", "value": env, "short": True}]}]}
+
+    url = "https://hooks.slack.com/services/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"
+    r = requests.post(url, data=json.dumps(payload))
+    print(r.text)
+    print(r.status_code)
+
+
 def run(args):
     id = int(args.id)
 
@@ -92,8 +108,10 @@ def run(args):
     description = backup.description
     disk = backup.disk
     zone = backup.zone
+    env = backup.env
 
     api.create_snapshot(name=name, description=description, disk=disk, zone=zone)
+    jarvis_say(name=name, disk=disk, env=env)
 
     if backup.count != 0:
         old_name = "{0}-{1}".format(disk, backup.count - 1)
