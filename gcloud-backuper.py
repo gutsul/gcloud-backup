@@ -13,6 +13,7 @@ def add_backup(args):
     api.check_disk(disk, zone)
 
     backup = Backup()
+    # TODO Refactor set name
     backup.name = "{0}-{1}".format(disk, backup.count)
     backup.disk = disk
     backup.zone = zone
@@ -25,14 +26,14 @@ def remove_backup(args):
     id = int(args.id)
     backup = Backup.get(id)
 
-    try:
-        snapshot = backup.name
-        # TODO: check it
-        api.delete_snapshot(snapshot)
+    if backup is not None:
+        snapshot = "{0}-{1}".format(backup.disk, backup.count - 1)
         backup.delete()
-        print("Removed backup: {0}".format(snapshot))
-    except:
-        print("Backup with id {0} not exist.".format(id))
+
+        try:
+            api.delete_snapshot(snapshot)
+        except:
+            print("Good. Snapshot {0} already removed".format(snapshot))
 
 
 def show_backups(args):
@@ -83,6 +84,27 @@ def configure(default, title):
     return setting
 
 
+def run(args):
+    id = int(args.id)
+
+    backup = Backup.get(id)
+    name = backup.name
+    description = backup.description
+    disk = backup.disk
+    zone = backup.zone
+
+    api.create_snapshot(name=name, description=description, disk=disk, zone=zone)
+
+    if backup.count != 0:
+        old_name = "{0}-{1}".format(disk, backup.count - 1)
+        api.delete_snapshot(old_name)
+
+    backup.count += 1
+    # TODO Refactor it
+    backup.name = "{0}-{1}".format(disk, backup.count)
+    backup.save()
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='GCloud backup utility')
     subparsers = parser.add_subparsers()
@@ -99,6 +121,10 @@ def parse_args():
     parser_configure = subparsers.add_parser('configure', help='Configure backup.')
     parser_configure.add_argument('id', help='Backup ID.')
     parser_configure.set_defaults(func=configure_backup)
+
+    parser_run = subparsers.add_parser('run', help='Run backup.')
+    parser_run.add_argument('id', help='Backup ID.')
+    parser_run.set_defaults(func=run)
 
     parser_list = subparsers.add_parser('list', help='Show backup list')
     parser_list.set_defaults(func=show_backups)
