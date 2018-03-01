@@ -4,7 +4,7 @@ from googleapiclient import discovery
 
 # Constants:
 SNAPSHOT_READY = 'READY'
-PROJECT_ID = 'adlithium-1289'
+PROJECT_ID = 'project_id'
 
 
 service = discovery.build('compute', 'v1')
