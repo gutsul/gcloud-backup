@@ -36,6 +36,8 @@ Credentials saved to file: [/home/ygrigortsevich/.config/gcloud/application_defa
 
 ```bash
 sudo apt-get install sqlite
+sudo pip3 install --upgrade prettytable
+sudo pip3 install --upgrade google-api-python-client
 ```
 
 
